@@ -1,0 +1,37 @@
+--- # Configuration Port
+server:
+  port: 8083
+
+--- # Configuration Thymeleaf
+spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/views
+      suffix: .jsp
+
+
+--- # Configuration Devtools
+spring:
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: false
+
+--- # Configuration MariaDb
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3307/boot
+    username: boot
+    password: 768523
+    hikari:
+      maximum-pool-size: 10
+
+
+--- # Configuration mybatis
+mybatis:
+  mapper-locations: classpath:sqlmapper/**/*.xml
+# mybatis.configuration.map-underscore-to-camel-case=true
+
+... # End

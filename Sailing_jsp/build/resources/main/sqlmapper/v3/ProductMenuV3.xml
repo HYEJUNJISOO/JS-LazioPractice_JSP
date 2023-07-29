@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--Dao 위치-->
+<mapper namespace="com.boot.sailing_jsp_jsp.v3.dao.MenuDaoV3">
+    <!-- 메뉴조회 -->
+    <select id="doList" resultType="com.boot.sailing_jsp.v3.vo.Product_menu">
+        SELECT no, product, kind, price,
+        date_format(reg_day,'%Y.%m.%d') as reg_day,
+        date_format(mod_day,'%Y.%m.%d') as mod_day
+        FROM product_menu
+    </select>
+    <!--
+    <![CDATA[   ]]> : xml 파싱에 관여하지 않도록 처리
+                   < : &lt;
+                   > : &gt;
+    -->
+    <!-- 검색에 의한 쿼리 -->
+    <select id="doSearch" resultType="com.boot.sailing_jsp.v3.vo.Product_menu">
+        SELECT no, product, kind, price,
+        date_format(reg_day,'%Y.%m.%d') as reg_day,
+        date_format(mod_day,'%Y.%m.%d') as mod_day
+        FROM product_menu
+        WHERE 1=1
+        AND reg_day >= DATE_FORMAT('2020-01-01','%Y%m%d')
+        AND reg_day &lt; DATE_ADD(DATE_FORMAT('2024-12-31','%Y%m%d'),INTERVAL +1 DAY)
+        <if test="strProduct !='ALL'">
+            AND product LIKE CONCAT(#{strProduct},'%')
+        </if>
+        <if test="strKind !='ALL'">
+            AND kind = #{strKind}
+        </if>
+    </select>
+
+    <!-- 메뉴조회 - One row -->
+    <select id="doListOne" resultType="map">
+        SELECT no, product, kind, price,
+        date_format(reg_day,'%Y.%m.%d') as reg_day,
+        date_format(mod_day,'%Y.%m.%d') as mod_day
+        FROM product_menu
+        Where no = CAST(#{strNo} as INTEGER)
+
+
+    </select>
+
+    <!-- 상품 등록 -->
+    <insert id="doInsert">
+        INSERT INTO product_menu (product, kind, price)
+        VALUES (#{product},#{kind},CAST(#{price} as INTEGER))
+    </insert>
+
+    <!-- 상품 수정 -->
+    <update id="doUpdate">
+        Update product_menu
+        Set
+            product = #{product},
+            kind = #{kind},
+            price = CAST(#{price} as INTEGER)
+        Where no = CAST(#{no} as INTEGER)
+    </update>
+
+    <!-- 삭제처리 -->
+    <delete id="doDelete">
+        Delete from product_menu
+        Where no = CAST(#{strNo} as INTEGER)
+    </delete>
+
+    <!-- 메뉴 가격 수정 -->
+    <update id="doUpdatePrice">
+        Update product_menu set
+        price = CAST(#{strPrice} as INTEGER)
+        Where no = CAST(#{strNo} as INTEGER)
+    </update>
+
+    <!-- 가격 로그입력  -->
+    <insert id="doInsertLog">
+        INSERT INTO product_menu_log (product_no,price)
+        VALUES (#{strNo},CAST(#{strPrice} as INTEGER))
+    </insert>
+
+    <!-- 메뉴 가격 수정(원쿼리)-->
+    <update id="doUpdatePriceOne">
+        Update product_menu set
+        price = CAST(#{strPrice} as INTEGER)
+        <where>
+            <foreach item="item" index="index" collection="chkList"
+                     open="no in (" separator="," close=")" nullable="true">
+                #{item}
+            </foreach>
+        </where>
+    </update>
+
+    <!-- 가격 로그입력(원쿼리) -->
+    <insert id="doInsertLogOne">
+        INSERT INTO product_menu_log(product_no,price)
+        <foreach item="item" index="index" collection="chkList" separator="UNION ALL" nullable="true">
+            SELECT #{item}, CAST(#{strPrice} as INTEGER) FROM DUAL
+        </foreach>
+    </insert>
+
+    <!-- boot log 입력  -->
+    <insert id="doBootLog">
+        INSERT INTO boot_log (class)
+        VALUES (#{strClass})
+    </insert>
+</mapper>

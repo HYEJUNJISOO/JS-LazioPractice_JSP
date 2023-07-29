@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--Dao 위치-->
+<mapper namespace="com.boot.sailing_jsp.v3.dao.OrderDaoV3">
+    <!-- 메뉴조회 -->
+    <select id="doList" resultType="com.boot.sailing_jsp.v3.vo.Order_list2">
+        SELECT no,product_no,product,price,cust_id,name,
+        DATE_FORMAT(reg_day,'%Y.%m.%d')AS reg_day
+        FROM order_list2;
+    </select>
+
+    <!-- 검색에 의한 쿼리 -->
+    <select id="doSearch" resultType="com.boot.sailing_jsp.v3.vo.Order_list2">
+        SELECT no, product_no, product, price, cust_id,name,
+        DATE_FORMAT(reg_day,'%Y.%m.%d') AS reg_day
+        FROM order_list2
+        WHERE 1=1
+        AND reg_day >= DATE_FORMAT(#{strStartDate},'%Y%m%d')
+        AND reg_day &lt; DATE_ADD(DATE_FORMAT(#{strEndDate},'%Y%m%d'),INTERVAL +1 DAY)
+        <if test="strProduct !='ALL'">
+            AND product LIKE CONCAT(#{strProduct},'%')
+        </if>
+        <if test="strName !='ALL'">
+            AND name like CONCAT(#{strName},'%')
+        </if>
+    </select>
+
+</mapper>
